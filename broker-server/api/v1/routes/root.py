@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import Optional
-
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from core.db import async_session_factory
-from operations import (
+from database.operations import (
     create_session,
     create_user,
     destroy_session,
@@ -26,31 +24,6 @@ async def get_db():
 
 def get_templates(request: Request):
     return request.app.state.templates
-    
-@router.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    code = exc.status_code
-    messages = {
-        404: "Страница не найдена",
-        403: "Доступ запрещён",
-        500: "Внутренняя ошибка сервера",
-        502: "Плохой шлюз",
-    }
-    message = messages.get(code, exc.detail or "Произошла ошибка")
-    return get_templates(request).TemplateResponse(
-        "error.html",
-        {"request": request, "code": code, "message": message},
-        status_code=code,
-    )
-
-
-@router.exception_handler(Exception)
-async def unhandled_exception_handler(request: Request, exc: Exception):
-    return get_templates(request).TemplateResponse(
-        "error.html",
-        {"request": request, "code": 500, "message": "Ошибка сервера"},
-        status_code=500,
-    )
 
 
 # Главная
@@ -110,7 +83,9 @@ async def register_post(
 # Логин
 @router.get("/login", response_class=HTMLResponse)
 async def login_get(request: Request):
-    return get_templates(request).TemplateResponse("login.html", {"request": request, "error": None})
+    return get_templates(request).TemplateResponse(
+        "login.html", {"request": request, "error": None}
+    )
 
 
 @router.post("/login")

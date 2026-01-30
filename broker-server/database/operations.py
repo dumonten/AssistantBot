@@ -4,17 +4,16 @@ import base64
 import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Optional, Literal
+from typing import Any, Literal, Optional
 from uuid import UUID
 
 from fastapi import Cookie
 from passlib.context import CryptContext
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.db import async_session_factory
-from schemas.database_models import User, SessionModel
-
+from schemas.database_models import SessionModel, User
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY", "change_me")

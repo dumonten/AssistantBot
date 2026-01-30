@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import JSON, Column, ForeignKey, String
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
@@ -15,6 +15,7 @@ class User(Base):
     identifier = Column(String, nullable=False, unique=True)
     metadata_ = Column("metadata", JSONB, nullable=False)
     createdAt = Column(String)
+
 
 class SessionModel(Base):
     __tablename__ = "sessions"
