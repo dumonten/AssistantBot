@@ -11,11 +11,6 @@
 
         <input type="password" id="password" name="password" placeholder="Пароль" minlength="4" required>
 
-        {% if show_2fa %}
-        <!-- Показываем поле для кода только если есть 2FA -->
-        <input type="text" id="code" name="code" placeholder="Код из Google Authenticator" pattern="\d{6}" style="margin-top:8px;">
-        {% endif %}
-
         <button type="submit" class="button roboto-font">Войти</button>
     </form>
     <p class="roboto-font" style="margin-top: 15px; font-size: 0.95rem; text-align: center; font-weight: 400;">

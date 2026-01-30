@@ -30,7 +30,10 @@ async def lifespan(app: FastAPI):
         app: FastAPI application instance
     """
     await init_db()
+    app.state.templates = Jinja2Templates(directory=str(settings.data_dir / "templates"))
+
     yield
+    
     await engine.dispose()
 
 
@@ -44,9 +47,6 @@ app.mount(
     name="resources",
 )
 app.mount("/static", StaticFiles(directory=settings.data_dir / "static"), name="static")
-
-templates = Jinja2Templates(directory=settings.data_dir / "templates")
-
 
 # Add logging middleware for request/response logging
 app.add_middleware(LoggingMiddleware)

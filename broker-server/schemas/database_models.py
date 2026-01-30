@@ -16,6 +16,16 @@ class User(Base):
     metadata_ = Column("metadata", JSONB, nullable=False)
     createdAt = Column(String)
 
+class SessionModel(Base):
+    __tablename__ = "sessions"
+
+    token = Column(String, primary_key=True)
+    user_id = Column(PG_UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"))
+    created = Column(DateTime(timezone=False), nullable=False)
+    expires = Column(DateTime(timezone=False), nullable=False)
+
+    user = relationship("User")
+
 
 class Thread(Base):
     __tablename__ = "threads"

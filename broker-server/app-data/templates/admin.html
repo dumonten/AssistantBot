@@ -7,17 +7,15 @@
     <tr>
         <th>ID</th>
         <th>Имя пользователя</th>
-        <th>E-mail</th>
         <th>Действия</th>
     </tr>
     {% for user in users %}
     <tr>
         <td>{{ user.id }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
+        <td>{{ user.identifier }}</td>
         <td>
             <a href="/admin/user/{{ user.id }}">Подробнее</a> |
-            <a href="/admin/delete/{{ user.id }}" onclick="return confirm('Удалить пользователя {{ user.username }}?')">Удалить</a>
+            <a href="/admin/delete/{{ user.id }}" onclick="return confirm('Удалить пользователя {{ user.identifier }}?')">Удалить</a>
         </td>
     </tr>
     {% endfor %}
@@ -25,11 +23,8 @@
 
 <h3>Создать пользователя вручную</h3>
 <form method="post" action="/admin/create_user">
-    <label for="username">Имя пользователя:</label>
-    <input type="text" id="username" name="username" required>
-
-    <label for="email">E-mail:</label>
-    <input type="text" id="email" name="email" required>
+    <label for="identifier">Имя пользователя:</label>
+    <input type="text" id="identifier" name="identifier" required>
 
     <label for="password">Пароль:</label>
     <input type="password" id="password" name="password" required>
