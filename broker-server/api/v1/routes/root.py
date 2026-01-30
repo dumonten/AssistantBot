@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 import base64
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, Cookie
+from fastapi import APIRouter, Cookie, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from core.db import async_session_factory
@@ -14,9 +14,8 @@ from database.operations import (
     create_session,
     create_user,
     destroy_session,
-    get_current_user as _get_current_user,
-    get_user_by_login,
     get_user_by_id,
+    get_user_by_login,
     verify_password,
 )
 
@@ -95,7 +94,8 @@ async def register_post(
     existing = await get_user_by_login(db, username)
     if existing:
         return get_templates(request).TemplateResponse(
-            "register.html", {"request": request, "error": "Пользователь уже существует"}
+            "register.html",
+            {"request": request, "error": "Пользователь уже существует"},
         )
 
     user = await create_user(db=db, identifier=username, password_plain=password)

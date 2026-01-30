@@ -1,6 +1,7 @@
 # src/ui/chainlit_handlers.py
 from __future__ import annotations
 
+import os
 from typing import Dict, Optional
 
 import chainlit as cl
@@ -19,12 +20,26 @@ from services.graph_service import GraphService
 from services.state_serializer import StateSerializer
 from workflows.registry import WorkflowRegistry
 
-
 db = Database(settings.db_url)
 repo = GraphStateRepository()
 
 # plug chainlit datalayer
 cl_data._data_layer = SQLAlchemyDataLayer(conninfo=settings.db_url)
+
+
+@cl.password_auth_callback
+def auth_callback(username: str, password: str):
+    # Fetch the user matching username from your database
+    # and compare the hashed password with the value stored in the database
+    if (username, password) == (
+        os.getenv("DEFAULT_ADMIN_USER", "admin"),
+        os.getenv("DEFAULT_ADMIN_PASSWORD", "admin"),
+    ):
+        return cl.User(
+            identifier="admin", metadata={"role": "admin", "provider": "credentials"}
+        )
+    else:
+        return None
 
 
 @cl.set_chat_profiles
@@ -103,7 +118,7 @@ async def on_message(message: cl.Message):
 
     ui_message = None
     async for event in graph.astream_events(state, version="v1", stream_mode="values"):
-        if event["event"] == "on_chat_model_stream" and event["name"] == workflow.output_chat_model:
+        if event["event"] == "on_chat_model_stream":
             content = event["data"]["chunk"].content or ""
             if ui_message is None:
                 ui_message = cl.Message(content=str(content))
@@ -111,7 +126,7 @@ async def on_message(message: cl.Message):
             else:
                 await ui_message.stream_token(token=str(content))
 
-        if event["event"] == "on_chain_end" and event["name"] == "LangGraph":
+        if event["event"] == "on_chain_end":
             state = event["data"]["output"]
 
     if ui_message:

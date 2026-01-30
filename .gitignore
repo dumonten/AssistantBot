@@ -311,3 +311,5 @@ pyrightconfig.json
 
 
 /broker-server/__pycache__
+*.pyc
+*.pyc
