@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="register-container">
+  <div class="form-section">
+    <h1>Регистрация</h1>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="post" action="/register" class="card">
+        <!-- <label for="username">Имя пользователя:</label> -->
+        <input placeholder="Логин" type="text" id="username" name="username" required>
+
+        <!-- <label for="email">E-mail:</label> -->
+        <input placeholder="Email" type="email" id="email" name="email" required>
+
+        <!-- <label for="password">Пароль:</label> -->
+        <input placeholder="Пароль" type="password" id="password" name="password" minlength="4" required>
+
+        <!-- <label for="confirm_password">Подтверждение пароля:</label> -->
+        <input placeholder="Подтверждение пароля" type="password" id="confirm_password" name="confirm_password" minlength="4" required>
+
+        <button type="submit" class="button">Зарегистрироваться</button>
+    </form>
+  </div>
+
+  <div class="info-list">
+    <h2 class="roboto-font">Добро пожаловать 😺</h2>
+    <p class="roboto-font">Создайте аккаунт, чтобы присоединиться к нашему сообществу и начать делать мир чуть лучше!</p>
+  </div>
+</div>
+{% endblock %}
