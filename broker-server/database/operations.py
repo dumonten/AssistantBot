@@ -82,25 +82,6 @@ async def destroy_session(db: AsyncSession, session_token: Optional[str]) -> Non
         await delete_session_db(db, session_token)
 
 
-async def get_current_user(
-    session_token: Optional[str] = Cookie(None),
-    db: AsyncSession = None,
-) -> Optional[User]:
-    if not session_token or db is None:
-        return None
-
-    # Cookie может быть объектом, берём value
-    if not isinstance(session_token, str):
-        session_token = getattr(session_token, "value", None)
-
-    if not session_token:
-        return None
-
-    session = await get_session_by_token(db, session_token)
-    if not session:
-        return None
-    return await get_user_by_id(db, session.user_id)
-
 
 # ---------------------------
 # Users
