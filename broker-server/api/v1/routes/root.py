@@ -1,14 +1,22 @@
 from __future__ import annotations
 
+import base64
+import os
+from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Cookie, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from core.db import async_session_factory
-from database.operations import create_session, create_user, destroy_session
-from database.operations import get_current_user as _get_current_user
-from database.operations import get_user_by_login
+from database.operations import (
+    create_session,
+    create_user,
+    destroy_session,
+    get_user_by_id,
+    get_user_by_login,
+    verify_password,
+)
 
 router = APIRouter(prefix="")
 
