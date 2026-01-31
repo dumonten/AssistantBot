@@ -1,31 +1,26 @@
+# core/config.py (existing, minor fix: use async_database_url in db.py)
 from datetime import datetime
 from pathlib import Path
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=Path(__file__).parent.parent / ".env",
         env_file_encoding="utf-8",
     )
-
     SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 9040
     SERVER_WORKERS: int = 1
-
     DB_HOST: str
     DB_PORT: str
     DB_USER: str
     DB_PASSWORD: str
     DB_NAME: str
     MAX_DB_CONNECTION_RETRIES: int = 10
-
     CHAINLIT_APP_URL: str
     APP_DATA_DIR_NAME: str
     APP_NAME: str
     PROCESS_NAME: str
-
     LOG_LEVEL: str = "INFO"
     LOG_ROTATION: str = "1 day"
     LOG_RETENTION: str = "1 month"
@@ -60,7 +55,6 @@ class Settings(BaseSettings):
             if not self._data_dir.exists():
                 raise ValueError(f"Data directory does not exist: {self._data_dir}")
         return self._data_dir
-
 
 settings: Settings = Settings()
 print(settings.database_url)
