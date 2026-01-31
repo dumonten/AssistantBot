@@ -1,7 +1,8 @@
 # src/infrastructure/db/repository.py
 from __future__ import annotations
 
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
+
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +10,10 @@ from .models import LangGraphState
 
 
 class GraphStateRepository:
-    async def get(self, session: AsyncSession, thread_id: str) -> Optional[LangGraphState]:
+
+    async def get(
+        self, session: AsyncSession, thread_id: str
+    ) -> Optional[LangGraphState]:
         return await session.get(LangGraphState, thread_id)
 
     async def upsert(
