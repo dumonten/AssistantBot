@@ -12,7 +12,7 @@ from setproctitle import setproctitle
 
 from api.v1.router import api_router
 from core.config import settings
-from core.db import engine, init_db
+from core.db import engine
 
 setproctitle(settings.PROCESS_NAME)
 
@@ -28,7 +28,6 @@ async def lifespan(app: FastAPI):
     Args:
         app: FastAPI application instance
     """
-    await init_db()
     app.state.templates = Jinja2Templates(
         directory=str(settings.data_dir / "templates")
     )
