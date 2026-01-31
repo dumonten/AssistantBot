@@ -1,36 +1,29 @@
 from __future__ import annotations
 
-import os
-import base64
-from datetime import datetime, timedelta
 from typing import Optional
-from uuid import UUID
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, Cookie
+from fastapi import APIRouter, Cookie, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from core.db import async_session_factory
-from database.operations import (
-    create_session,
-    create_user,
-    destroy_session,
-    get_current_user as _get_current_user,
-    get_user_by_login,
-    get_user_by_id,
-    verify_password,
-)
+from database.operations import create_session, create_user, destroy_session
+from database.operations import get_current_user as _get_current_user
+from database.operations import get_user_by_login
 
 router = APIRouter(prefix="")
 
 
 # ---------------------------
-# DB session helper
+# DB helper
 # ---------------------------
 async def get_db():
     async with async_session_factory() as db:
         yield db
 
 
+# ---------------------------
+# Templates helper
+# ---------------------------
 def get_templates(request: Request):
     return request.app.state.templates
 
@@ -39,31 +32,18 @@ def get_templates(request: Request):
 # Current user helper
 # ---------------------------
 async def get_current_user(
-    session_token: Optional[str] = Cookie(None),
-    db=Depends(get_db),
+    db=Depends(get_db), session_token: Optional[str] = Cookie(None)
 ):
     if not session_token:
         return None
-
-    # Иногда Cookie возвращает объект, а не строку
-    if not isinstance(session_token, str):
-        session_token = getattr(session_token, "value", None)
-
-    if not session_token:
-        return None
-
-    user = await _get_current_user(session_token=session_token, db=db)
-    return user
+    return await _get_current_user(db=db, session_token=session_token)
 
 
 # ---------------------------
 # Главная
 # ---------------------------
 @router.get("/", response_class=HTMLResponse)
-async def index(
-    request: Request,
-    current_user=Depends(get_current_user),
-):
+async def index(request: Request, current_user=Depends(get_current_user)):
     return get_templates(request).TemplateResponse(
         "index.html", {"request": request, "user": current_user}
     )
@@ -95,12 +75,11 @@ async def register_post(
     existing = await get_user_by_login(db, username)
     if existing:
         return get_templates(request).TemplateResponse(
-            "register.html", {"request": request, "error": "Пользователь уже существует"}
+            "register.html",
+            {"request": request, "error": "Пользователь уже существует"},
         )
 
-    user = await create_user(db=db, identifier=username, password_plain=password)
-
-    # создаем сессию
+    user = await create_user(db, identifier=username, password_plain=password)
     token = await create_session(db, user.id)
 
     resp = RedirectResponse(url=f"/user/{user.id}", status_code=303)
@@ -143,9 +122,7 @@ async def login_post(
             "login.html", {"request": request, "error": "Неправильные учётные данные"}
         )
 
-    # создаем сессию
     token = await create_session(db, user.id)
-
     resp = RedirectResponse(url=f"/user/{user.id}", status_code=303)
     resp.set_cookie(
         key="session_token",
@@ -169,7 +146,6 @@ async def profile(
     if not current_user:
         raise HTTPException(status_code=403)
 
-    # разрешаем смотреть только себя
     if str(current_user.id) != str(user_id):
         raise HTTPException(status_code=403)
 
@@ -183,7 +159,6 @@ async def profile(
 # ---------------------------
 @router.get("/logout")
 async def logout(
-    request: Request,
     db=Depends(get_db),
     session_token: Optional[str] = Cookie(None),
 ):

@@ -311,3 +311,4 @@ pyrightconfig.json
 
 
 /broker-server/__pycache__
+/broker-server/postgres_data
