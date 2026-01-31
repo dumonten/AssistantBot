@@ -1,11 +1,15 @@
 # services/user_service.py (completed with full CRUD)
-from sqlalchemy.ext.asyncio import AsyncSession
-from models.db import User
-from services.role_service import RoleService
-from sqlalchemy import select, delete, update
 from typing import List, Optional
 
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.db import User
+from services.role_service import RoleService
+
+
 class UserService:
+
     def __init__(self, db: AsyncSession):
         self.db = db
 
@@ -28,7 +32,13 @@ class UserService:
         await self.db.refresh(user)
         return user
 
-    async def update(self, user_id: int, login: Optional[str] = None, hashed_password: Optional[str] = None, is_active: Optional[bool] = None) -> Optional[User]:
+    async def update(
+        self,
+        user_id: int,
+        login: Optional[str] = None,
+        hashed_password: Optional[str] = None,
+        is_active: Optional[bool] = None,
+    ) -> Optional[User]:
         updates = {}
         if login is not None:
             updates["login"] = login
@@ -65,6 +75,7 @@ class UserService:
             await self.db.flush()
             return True
         return False
+
     def __init__(self, db: AsyncSession):
         self.db = db
 
@@ -87,7 +98,13 @@ class UserService:
         await self.db.refresh(user)
         return user
 
-    async def update(self, user_id: int, login: Optional[str] = None, hashed_password: Optional[str] = None, is_active: Optional[bool] = None) -> Optional[User]:
+    async def update(
+        self,
+        user_id: int,
+        login: Optional[str] = None,
+        hashed_password: Optional[str] = None,
+        is_active: Optional[bool] = None,
+    ) -> Optional[User]:
         updates = {}
         if login is not None:
             updates["login"] = login

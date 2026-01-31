@@ -1,8 +1,11 @@
 # services/role_service.py
-from sqlalchemy.ext.asyncio import AsyncSession
-from models.db import Role
-from sqlalchemy import select, delete, update
 from typing import List, Optional
+
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.db import Role
+
 
 class RoleService:
     def __init__(self, db: AsyncSession):
